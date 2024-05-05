@@ -3,33 +3,19 @@ defaultTasks 'clean', 'build', 'artifactoryPublish'
 group = 'com.blinkbox.books'
 version = '1.2.1'
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
-}
+apply plugin : 'java'
+apply plugin : 'maven-publish'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
-apply plugin : 'java-robolectric'
-apply plugin : 'maven'
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-// get 'java-robolectric' from Maven Central
 buildscript {
     repositories {
         mavenCentral()
-    }
-
-    dependencies {
-        // use version 2.0 for Robolectric 2.0
-        classpath group: 'com.stanfy.android', name: 'gradle-plugin-java-robolectric', version: '2.0'
     }
 }
 
 repositories {
 	mavenCentral()
-}
-
-javarob {
-    packageName = 'com.blinkbox.books'
 }
 
 test {
@@ -38,18 +24,22 @@ test {
 }
 
 dependencies {
-    compile "com.google.code.gson:gson:2.2.4"
-    compile fileTree(dir : 'libs', include : '*.jar')
+    implementation "com.google.code.gson:gson:2.2.4"
+    implementation fileTree(dir : 'libs', include : '*.jar')
 
-    compile group: 'com.google.android', name: 'android', version: '4.1.1.4'
-    testCompile group: 'junit', name: 'junit', version: '4.10'
-    testCompile group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
+    implementation group: 'com.google.android', name: 'android', version: '4.1.1.4'
+    testImplementation group: 'junit', name: 'junit', version: '4.10'
+    testImplementation group: 'org.robolectric', name: 'robolectric', version: '2.0-alpha-2'
 }
 
-task javadocJar(type: Jar, dependsOn:javadoc) {      
-    classifier = 'javadoc'     
-        from javadoc.destinationDir 
-}  
+javadoc {
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    archiveClassifier = 'javadoc'
+        from javadoc.destinationDir
+}
 
 artifacts {          
     archives javadocJar
